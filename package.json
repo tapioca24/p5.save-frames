@@ -1,7 +1,7 @@
 {
   "name": "p5.save-frames",
   "version": "0.0.1",
-  "description": "p5.js extension for saving consecutive frames",
+  "description": "p5.js extension for capturing asequence of frames",
   "keywords": [
     "sketch",
     "p5js",
@@ -9,7 +9,8 @@
     "p5.js",
     "processing",
     "art",
-    "creative"
+    "creative",
+    "creative-coding"
   ],
   "homepage": "https://github.com/tapioca24/p5.save-frames",
   "repository": {
