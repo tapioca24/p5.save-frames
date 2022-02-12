@@ -5,7 +5,7 @@ let options = {};
 let captureTasks = [];
 let count = 0;
 let isCapturing = false;
-let contaienr, button, span;
+let button, span;
 
 const updateMessage = () => {
   if (!span) return;
@@ -77,7 +77,7 @@ const stopCapturing = () => {
 
 const createContainer = (parent) => {
   if (!parent) return;
-  container = document.createElement("div");
+  const container = document.createElement("div");
   container.style.margin = "12px";
   container.style.position = "absolute";
   container.style.top = "0";

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>save-animation</title>
+    <script src="../node_modules/p5/lib/p5.min.js"></script>
+    <script src="../node_modules/fflate/umd/index.js"></script>
+    <script src="../dist/p5.save-frames.umd.js"></script>
+  </head>
+  <body style="margin: 0">
+    <script>
+      function setup() {
+        createCanvas(800, 800);
+        background(30);
+      }
+      function draw() {
+        ellipse(mouseX, mouseY, 80, 80);
+      }
+    </script>
+  </body>
+</html>

@@ -1,13 +1,35 @@
 {
   "name": "p5.save-frames",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "p5.js extension for saving consecutive frames",
+  "keywords": [
+    "sketch",
+    "p5js",
+    "p5",
+    "p5.js",
+    "processing",
+    "art",
+    "creative"
+  ],
+  "homepage": "https://github.com/tapioca24/p5.save-frames",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapioca24/p5.save-frames.git"
+  },
+  "license": "MIT",
+  "author": "tapioca24",
+  "main": "dist/p5.save-frames.umd.js",
+  "module": "dist/p5.save-frames.es.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "prepublishOnly": "npm run build"
   },
   "devDependencies": {
+    "fflate": "^0.7.3",
+    "p5": "^1.4.1",
     "vite": "^2.8.0"
   }
 }
