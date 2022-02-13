@@ -2,9 +2,10 @@ import { downloadZip } from "./download";
 import { createUi } from "./ui";
 
 let options = {};
+let state = "idle";
 let count = 0;
 let captureTasks = [];
-let state = "idle";
+let updateUi;
 
 const makeMimeType = (extension) => {
   const ext = extension.toLowerCase();
@@ -33,11 +34,73 @@ const resetStatus = () => {
   captureTasks = [];
 };
 
-const startCaptring = (updateUi) => {
+const startCaptring = () => {
   state = "capturing";
   updateUi(state, count / options.framerate);
 
-  const frameFactory = setInterval(async () => {
+  if (options.mode !== "sync") {
+    const frameFactory = setInterval(async () => {
+      switch (state) {
+        case "capturing":
+          const p = makeBuffer();
+          captureTasks.push(p);
+          await p;
+          break;
+        case "downloading":
+          clearInterval(frameFactory);
+          const buffer = await Promise.all(captureTasks);
+          downloadZip(buffer, "frames");
+          resetStatus();
+          break;
+      }
+      updateUi(state, count / options.framerate);
+    }, 1000 / options.framerate);
+  }
+};
+
+const stopCapturing = () => {
+  state = "downloading";
+  updateUi(state, count / options.framerate);
+};
+
+const initialize = () => {
+  options = {
+    mode: window.P5_SAVE_FRAMES_MODE || "async",
+    overrideFramerate: window.P5_SAVE_FRAMES_OVERRIDE_FRAMERATE || false,
+    framerate: window.P5_SAVE_FRAMES_FRAMERATE || 30,
+    extension: window.P5_SAVE_FRAMES_EXTENSION || "png",
+    uiParent: window.P5_SAVE_FRAMES_UI_PARENT || document.body,
+  };
+
+  const ui = createUi(options.uiParent);
+  updateUi = ui.updateUi;
+  ui.button.addEventListener("click", (e) => {
+    e.stopPropagation();
+    switch (state) {
+      case "idle":
+        startCaptring();
+        break;
+      case "capturing":
+        stopCapturing();
+        break;
+    }
+  });
+
+  if (options.overrideFramerate) {
+    const originalSetup = window.setup;
+    const newSetup = () => {
+      originalSetup();
+      frameRate(options.framerate);
+    };
+
+    Object.assign(window, { setup: newSetup });
+  }
+};
+
+const postDraw = async () => {
+  if (options.mode === "sync") {
+    if (state === "idle") return;
+
     switch (state) {
       case "capturing":
         const p = makeBuffer();
@@ -45,40 +108,14 @@ const startCaptring = (updateUi) => {
         await p;
         break;
       case "downloading":
-        clearInterval(frameFactory);
         const buffer = await Promise.all(captureTasks);
         downloadZip(buffer, "frames");
         resetStatus();
         break;
     }
     updateUi(state, count / options.framerate);
-  }, 1000 / options.framerate);
-};
-
-const stopCapturing = (updateUi) => {
-  state = "downloading";
-  updateUi(state, count / options.framerate);
-};
-
-const initialize = () => {
-  options = {
-    framerate: window.P5_SAVE_FRAMES_FRAMERATE || 30,
-    extension: window.P5_SAVE_FRAMES_EXTENSION || "png",
-    uiParent: window.P5_SAVE_FRAMES_UI_PARENT || document.body,
-  };
-
-  const { button, updateUi } = createUi(options.uiParent);
-  button.addEventListener("click", (e) => {
-    e.stopPropagation();
-    switch (state) {
-      case "idle":
-        startCaptring(updateUi);
-        break;
-      case "capturing":
-        stopCapturing(updateUi);
-        break;
-    }
-  });
+  }
 };
 
 p5.prototype.registerMethod("init", initialize);
+p5.prototype.registerMethod("post", postDraw);
