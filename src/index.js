@@ -1,43 +1,24 @@
-const START_CAPTURING_TEXT = "Start capturing";
-const STOP_CAPTURING_TEXT = "Stop capturing";
+import { downloadZip } from "./download";
+import { createUi } from "./ui";
 
 let options = {};
-let captureTasks = [];
 let count = 0;
-let isCapturing = false;
-let button, span;
+let captureTasks = [];
+let state = "idle";
 
-const updateMessage = () => {
-  if (!span) return;
-  const time = count / options.framerate;
-  const m = Math.floor(time / 60);
-  const s = time % 60;
-  const mText = `${m}`.padStart(2, "0");
-  const sText = s.toFixed(1).padStart(4, "0");
-  span.innerText = `${mText}:${sText}`;
+const makeMimeType = (extension) => {
+  const ext = extension.toLowerCase();
+  if (ext === "png") return "image/png";
+  if (ext === "jpg") return "image/jpeg";
+  if (ext === "jpeg") return "image/jpeg";
+  return "image/png";
 };
 
 const makeBuffer = async () => {
   const index = count++;
   const numbering = `${index}`.padStart(4, "0");
   const filename = `frame-${numbering}.${options.extension}`;
-
-  let mimeType;
-  const extension = options.extension.toLowerCase();
-  switch (extension) {
-    case "png":
-      mimeType = "image/png";
-      break;
-    case "jpeg":
-      mimeType = "image/jpeg";
-      break;
-    case "jpg":
-      mimeType = "image/jpeg";
-      break;
-    default:
-      mimeType = "image/png";
-      break;
-  }
+  const mimeType = makeMimeType(options.extension);
 
   const canvas = this._curElement.elt;
   const blob = await new Promise((resolve) => canvas.toBlob(resolve, mimeType));
@@ -46,103 +27,37 @@ const makeBuffer = async () => {
   return { index, filename, uint8array };
 };
 
-const startCaptring = () => {
-  isCapturing = true;
-  button.innerText = STOP_CAPTURING_TEXT;
+const resetStatus = () => {
+  state = "idle";
+  count = 0;
+  captureTasks = [];
+};
+
+const startCaptring = (updateUi) => {
+  state = "capturing";
+  updateUi(state, count / options.framerate);
 
   const frameFactory = setInterval(async () => {
-    if (!isCapturing) {
-      clearInterval(frameFactory);
-      const buffer = await Promise.all(captureTasks);
-      downloadZip(buffer);
-      captureTasks = [];
-      count = 0;
-      button.innerText = START_CAPTURING_TEXT;
-      button.disabled = false;
-      updateMessage();
-      return;
+    switch (state) {
+      case "capturing":
+        const p = makeBuffer();
+        captureTasks.push(p);
+        await p;
+        break;
+      case "downloading":
+        clearInterval(frameFactory);
+        const buffer = await Promise.all(captureTasks);
+        downloadZip(buffer, "frames");
+        resetStatus();
+        break;
     }
-
-    const p = makeBuffer();
-    captureTasks.push(p);
-    await p;
-    updateMessage();
+    updateUi(state, count / options.framerate);
   }, 1000 / options.framerate);
 };
 
-const stopCapturing = () => {
-  isCapturing = false;
-  button.disabled = true;
-};
-
-const createContainer = (parent) => {
-  if (!parent) return;
-  const container = document.createElement("div");
-  container.style.margin = "12px";
-  container.style.position = "absolute";
-  container.style.top = "0";
-  container.style.left = "0";
-  container.style.display = "flex";
-  container.style.gap = "8px";
-  parent.appendChild(container);
-  return container;
-};
-
-const createButton = (parent) => {
-  if (!parent) return;
-  button = document.createElement("button");
-  button.innerText = START_CAPTURING_TEXT;
-  button.onclick = (e) => {
-    e.stopPropagation();
-    if (isCapturing) {
-      stopCapturing();
-    } else {
-      startCaptring();
-    }
-  };
-  parent.appendChild(button);
-  return button;
-};
-
-const createSpan = (parent) => {
-  if (!parent) return;
-  span = document.createElement("span");
-  span.style.color = "white";
-  span.style.textShadow = "0 0 4px black";
-  updateMessage(span);
-  parent.appendChild(span);
-  return span;
-};
-
-const createElements = (parent) => {
-  if (!parent) return;
-  const container = createContainer(parent);
-  createButton(container);
-  createSpan(container);
-};
-
-const downloadZip = (buffer) => {
-  if (buffer.length === 0) return;
-  const dirName = "frames";
-
-  const images = {};
-  buffer
-    .sort((a, b) => a.index - b.index)
-    .forEach(({ filename, uint8array }) => {
-      images[filename] = [uint8array, { level: 0 }];
-    });
-
-  // create zip file
-  const zipped = fflate.zipSync({ [dirName]: images });
-  const blob = new Blob([zipped], { type: "application/zip" });
-
-  // download
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.download = `${dirName}.zip`;
-  a.href = url;
-  a.click();
-  URL.revokeObjectURL(url);
+const stopCapturing = (updateUi) => {
+  state = "downloading";
+  updateUi(state, count / options.framerate);
 };
 
 const initialize = () => {
@@ -152,7 +67,18 @@ const initialize = () => {
     uiParent: window.P5_SAVE_FRAMES_UI_PARENT || document.body,
   };
 
-  createElements(options.uiParent);
+  const { button, updateUi } = createUi(options.uiParent);
+  button.addEventListener("click", (e) => {
+    e.stopPropagation();
+    switch (state) {
+      case "idle":
+        startCaptring(updateUi);
+        break;
+      case "capturing":
+        stopCapturing(updateUi);
+        break;
+    }
+  });
 };
 
 p5.prototype.registerMethod("init", initialize);
