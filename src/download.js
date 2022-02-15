@@ -1,3 +1,5 @@
+import { zipSync } from "fflate";
+
 export const downloadZip = (buffer, dirName) => {
   if (buffer.length === 0) return;
 
@@ -9,7 +11,7 @@ export const downloadZip = (buffer, dirName) => {
     });
 
   // create zip file
-  const zipped = fflate.zipSync({ [dirName]: images });
+  const zipped = zipSync({ [dirName]: images });
   const blob = new Blob([zipped], { type: "application/zip" });
 
   // download

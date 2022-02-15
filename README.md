@@ -32,12 +32,17 @@ Thus, you can easily add the ability to save frames to your sketches.
 
 ### CDN
 
-Add two scripts to your HTML file.  
-Use [fflate](https://www.npmjs.com/package/fflate) as a dependency.
+[jsDelivr](https://www.jsdelivr.com/package/npm/p5.save-frames) is available.  
+Add the script to your HTML file.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/fflate"></script>
-<script src="https://cdn.jsdelivr.net/npm/p5.save-frames"></script>
+<script src="https://cdn.jsdelivr.net/npm/p5.save-frames@latest/dist/p5.save-frames.umd.min.js"></script>
+```
+
+You can also use the fixed version.
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/p5.save-frames@2.0.0/dist/p5.save-frames.umd.min.js"></script>
 ```
 
 ## Usage
