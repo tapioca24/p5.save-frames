@@ -28,8 +28,11 @@ const makeBuffer = async () => {
   return { index, filename, uint8array };
 };
 
-const resetStatus = () => {
+const resetState = () => {
   state = "idle";
+};
+
+const resetVariables = () => {
   count = 0;
   captureTasks = [];
 };
@@ -48,9 +51,10 @@ const startCaptring = () => {
           break;
         case "downloading":
           clearInterval(frameFactory);
+          resetState();
           const buffer = await Promise.all(captureTasks);
           downloadZip(buffer, "frames");
-          resetStatus();
+          resetVariables();
           break;
       }
       updateUi(state, count / options.framerate);
@@ -108,9 +112,10 @@ const postDraw = async () => {
         await p;
         break;
       case "downloading":
+        resetState();
         const buffer = await Promise.all(captureTasks);
         downloadZip(buffer, "frames");
-        resetStatus();
+        resetVariables();
         break;
     }
     updateUi(state, count / options.framerate);
