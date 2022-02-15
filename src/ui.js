@@ -2,7 +2,7 @@ const START_CAPTURING_TEXT = "Start capturing";
 const STOP_CAPTURING_TEXT = "Stop capturing";
 
 const getIndicator = (count) => {
-  return `${count}`.padStart(4, "0");
+  return `${count}`.padStart(7, "0");
 };
 
 const createContainer = (parent) => {

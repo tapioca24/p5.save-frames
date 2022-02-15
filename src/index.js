@@ -17,7 +17,7 @@ const makeMimeType = (extension) => {
 
 const makeBuffer = async () => {
   const index = count++;
-  const numbering = `${index}`.padStart(4, "0");
+  const numbering = `${index}`.padStart(7, "0");
   const filename = `frame-${numbering}.${options.extension}`;
   const mimeType = makeMimeType(options.extension);
 
