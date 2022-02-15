@@ -39,7 +39,7 @@ const resetVariables = () => {
 
 const startCaptring = () => {
   state = "capturing";
-  updateUi(state, count / options.framerate);
+  updateUi(state, count);
 
   if (options.mode !== "sync") {
     const frameFactory = setInterval(async () => {
@@ -57,14 +57,14 @@ const startCaptring = () => {
           resetVariables();
           break;
       }
-      updateUi(state, count / options.framerate);
+      updateUi(state, count);
     }, 1000 / options.framerate);
   }
 };
 
 const stopCapturing = () => {
   state = "downloading";
-  updateUi(state, count / options.framerate);
+  updateUi(state, count);
 };
 
 const initialize = () => {
@@ -118,7 +118,7 @@ const postDraw = async () => {
         resetVariables();
         break;
     }
-    updateUi(state, count / options.framerate);
+    updateUi(state, count);
   }
 };
 

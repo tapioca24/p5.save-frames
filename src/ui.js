@@ -1,6 +1,10 @@
 const START_CAPTURING_TEXT = "Start capturing";
 const STOP_CAPTURING_TEXT = "Stop capturing";
 
+const getIndicator = (count) => {
+  return `${count}`.padStart(4, "0");
+};
+
 const createContainer = (parent) => {
   const container = document.createElement("div");
   container.style.margin = "12px";
@@ -24,17 +28,9 @@ const createSpan = (parent) => {
   const span = document.createElement("span");
   span.style.color = "white";
   span.style.textShadow = "0 0 4px black";
-  span.innerText = "00:00.0";
+  span.innerText = getIndicator(0);
   parent.appendChild(span);
   return span;
-};
-
-const getIndicator = (seconds) => {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  const mStr = `${m}`.padStart(2, "0");
-  const sStr = s.toFixed(1).padStart(4, "0");
-  return `${mStr}:${sStr}`;
 };
 
 export const createUi = (parent) => {
@@ -42,7 +38,7 @@ export const createUi = (parent) => {
   const button = createButton(container);
   const span = createSpan(container);
 
-  const updateUi = (state, seconds) => {
+  const updateUi = (state, count) => {
     switch (state) {
       case "idle":
         button.innerText = START_CAPTURING_TEXT;
@@ -52,12 +48,12 @@ export const createUi = (parent) => {
       case "capturing":
         button.innerText = STOP_CAPTURING_TEXT;
         button.disabled = false;
-        span.innerText = getIndicator(seconds);
+        span.innerText = getIndicator(count);
         break;
       case "downloading":
         button.innerText = STOP_CAPTURING_TEXT;
         button.disabled = true;
-        span.innerText = getIndicator(seconds);
+        span.innerText = getIndicator(count);
         break;
     }
   };
