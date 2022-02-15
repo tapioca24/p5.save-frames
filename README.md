@@ -17,7 +17,7 @@ However, the `saveFrames` function has some limitations:
 - Need to edit the code to save the frames
 - Need to specify the duration beforehand
 - Duration is limited to 15 seconds
-- Zip file download is not supported
+- Image files will be downloaded individually
 
 p5.save-frames has the following features:
 
@@ -54,23 +54,20 @@ You can also use the fixed version.
 That's it.  
 A sequence of frames will be downloaded as a zip file.
 
-## Sync mode
+## Async mode
 
-By default, p5.save-frames periodically executes the capture task asynchronously with the p5.js frame rate.
-In sync mode, the capture task will be synchronized with the p5.js frame rate.
-This is useful when you want to stabilize the capture.
+By default, p5.save-frames runs the capture task in sync with the rendering frame rate of p5.js.
+In async mode, it will periodically run the capture task asynchronously with the rendering frame rate.
+This is useful if you want to set the rendering frame rate and capturing frame rate separately.
 
-The following is an example of using sync mode with the `P5_SAVE_FRAMES_OVERRIDE_FRAMERATE` option. 
-The p5.js frame rate is overwritten by `P5_SAVE_FRAMES_FRAMERATE`.
+Here is an example of using async mode.
 
 ```js
-P5_SAVE_FRAMES_MODE = "sync";
-P5_SAVE_FRAMES_OVERRIDE_FRAMERATE = true;
-P5_SAVE_FRAMES_FRAMERATE = 10;
+P5_SAVE_FRAMES_MODE = "async";
 
 function setup() {
   createCanvas(400, 400, WEBGL);
-  frameRate(30);
+  frameRate(60);
 }
 
 function draw() {
@@ -86,13 +83,13 @@ function draw() {
 
 You can change the behavior by specifying some global variables.
 
-| Variables                           | Default         | Description                                                      |
-| ----------------------------------- | --------------- | ---------------------------------------------------------------- |
-| `P5_SAVE_FRAMES_MODE`               | `"async"`       | Execution mode of the capture task. "async" or "sync"            |
-| `P5_SAVE_FRAMES_OVERRIDE_FRAMERATE` | false           | Override the frame rate in p5.js with `P5_SAVE_FRAMES_FRAMERATE` |
-| `P5_SAVE_FRAMES_FRAMERATE`          | `30`            | Framerate to save the frames in                                  |
-| `P5_SAVE_FRAMES_EXTENSION`          | `"png"`         | Image format. "jpg" or "png"                                     |
-| `P5_SAVE_FRAMES_UI_PARENT`          | `document.body` | Parent element to overlay the GUI                                |
+| Variables                           | Default         | Description                                                                                      |
+| ----------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ |
+| `P5_SAVE_FRAMES_MODE`               | `"sync"`        | Execution mode of the capture task. "sync" or "async"                                            |
+| `P5_SAVE_FRAMES_OVERRIDE_FRAMERATE` | `false`         | Override the rendering frame rate of p5.js with `P5_SAVE_FRAMES_FRAMERATE`                       |
+| `P5_SAVE_FRAMES_FRAMERATE`          | `30`            | Capturing frame rate. Used in async mode or with the `P5_SAVE_FRAMES_OVERRIDE_FRAMERATE` option. |
+| `P5_SAVE_FRAMES_EXTENSION`          | `"png"`         | Image format. "png" or "jpg"                                                                     |
+| `P5_SAVE_FRAMES_UI_PARENT`          | `document.body` | Parent element to overlay the GUI                                                                |
 
 ## License
 

@@ -41,7 +41,7 @@ const startCaptring = () => {
   state = "capturing";
   updateUi(state, count);
 
-  if (options.mode !== "sync") {
+  if (options.mode === "async") {
     const frameFactory = setInterval(async () => {
       switch (state) {
         case "capturing":
@@ -69,7 +69,7 @@ const stopCapturing = () => {
 
 const initialize = () => {
   options = {
-    mode: window.P5_SAVE_FRAMES_MODE || "async",
+    mode: window.P5_SAVE_FRAMES_MODE || "sync",
     overrideFramerate: window.P5_SAVE_FRAMES_OVERRIDE_FRAMERATE || false,
     framerate: window.P5_SAVE_FRAMES_FRAMERATE || 30,
     extension: window.P5_SAVE_FRAMES_EXTENSION || "png",
@@ -102,7 +102,7 @@ const initialize = () => {
 };
 
 const postDraw = async () => {
-  if (options.mode === "sync") {
+  if (options.mode !== "async") {
     if (state === "idle") return;
 
     switch (state) {
