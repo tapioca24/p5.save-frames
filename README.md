@@ -120,6 +120,7 @@ You can change the behavior by specifying some global variables.
 | `P5_SAVE_FRAMES_OVERRIDE_FRAMERATE` | `false`         | Override the rendering frame rate of p5.js with `P5_SAVE_FRAMES_FRAMERATE`                       |
 | `P5_SAVE_FRAMES_FRAMERATE`          | `30`            | Capturing frame rate. Used in async mode or with the `P5_SAVE_FRAMES_OVERRIDE_FRAMERATE` option. |
 | `P5_SAVE_FRAMES_EXTENSION`          | `"png"`         | Image format. "png" or "jpg"                                                                     |
+| `P5_SAVE_FRAMES_HIDE_UI`            | `false`         | If set to true, the GUI will be hidden                                                           |
 | `P5_SAVE_FRAMES_UI_PARENT`          | `document.body` | Parent element to overlay the GUI                                                                |
 
 ## Limitations

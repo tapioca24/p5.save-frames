@@ -49,7 +49,7 @@ const startCapturing = () => {
 
   console.log("🎥 start capturing...");
   state = "capturing";
-  updateUi(state, count);
+  updateUi?.(state, count);
 
   if (options.mode === "async") {
     const frameFactory = setInterval(async () => {
@@ -67,7 +67,7 @@ const startCapturing = () => {
           resetVariables();
           break;
       }
-      updateUi(state, count);
+      updateUi?.(state, count);
     }, 1000 / options.framerate);
   }
 };
@@ -79,7 +79,7 @@ const stopCapturing = () => {
   }
   console.log("✅ captured");
   state = "downloading";
-  updateUi(state, count);
+  updateUi?.(state, count);
 };
 
 const initialize = () => {
@@ -88,22 +88,25 @@ const initialize = () => {
     overrideFramerate: window.P5_SAVE_FRAMES_OVERRIDE_FRAMERATE || false,
     framerate: window.P5_SAVE_FRAMES_FRAMERATE || 30,
     extension: window.P5_SAVE_FRAMES_EXTENSION || "png",
+    hideUi: window.P5_SAVE_FRAMES_HIDE_UI || false,
     uiParent: window.P5_SAVE_FRAMES_UI_PARENT || document.body,
   };
 
-  const ui = createUi(options.uiParent);
-  updateUi = ui.updateUi;
-  ui.button.addEventListener("click", (e) => {
-    e.stopPropagation();
-    switch (state) {
-      case "idle":
-        startCapturing();
-        break;
-      case "capturing":
-        stopCapturing();
-        break;
-    }
-  });
+  if (!options.hideUi) {
+    const ui = createUi(options.uiParent);
+    updateUi = ui.updateUi;
+    ui.button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      switch (state) {
+        case "idle":
+          startCapturing();
+          break;
+        case "capturing":
+          stopCapturing();
+          break;
+      }
+    });
+  }
 
   if (options.overrideFramerate) {
     const originalSetup = window.setup;
@@ -133,7 +136,7 @@ const postDraw = async () => {
         resetVariables();
         break;
     }
-    updateUi(state, count);
+    updateUi?.(state, count);
   }
 };
 
