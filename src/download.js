@@ -1,5 +1,14 @@
 import { zipSync } from "fflate";
 
+export const downloadBlob = (blob, filename) => {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.download = filename;
+  a.href = url;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 export const downloadZip = (buffer, dirName) => {
   if (buffer.length === 0) return;
 
@@ -10,15 +19,7 @@ export const downloadZip = (buffer, dirName) => {
       images[filename] = [uint8array, { level: 0 }];
     });
 
-  // create zip file
   const zipped = zipSync({ [dirName]: images });
   const blob = new Blob([zipped], { type: "application/zip" });
-
-  // download
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.download = `${dirName}.zip`;
-  a.href = url;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBlob(blob, `${dirName}.zip`);
 };
