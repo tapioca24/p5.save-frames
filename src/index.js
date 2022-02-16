@@ -37,7 +37,17 @@ const resetVariables = () => {
   captureTasks = [];
 };
 
-const startCaptring = () => {
+const isCapturing = () => {
+  return state === "capturing" || state === "downloading";
+};
+
+const startCapturing = () => {
+  if (state !== "idle") {
+    console.warn("capturing is already running");
+    return;
+  }
+
+  console.log("🎥 start capturing...");
   state = "capturing";
   updateUi(state, count);
 
@@ -63,6 +73,11 @@ const startCaptring = () => {
 };
 
 const stopCapturing = () => {
+  if (state !== "capturing") {
+    console.warn("capturing is not running");
+    return;
+  }
+  console.log("✅ captured");
   state = "downloading";
   updateUi(state, count);
 };
@@ -82,7 +97,7 @@ const initialize = () => {
     e.stopPropagation();
     switch (state) {
       case "idle":
-        startCaptring();
+        startCapturing();
         break;
       case "capturing":
         stopCapturing();
@@ -124,3 +139,6 @@ const postDraw = async () => {
 
 p5.prototype.registerMethod("init", initialize);
 p5.prototype.registerMethod("post", postDraw);
+p5.prototype.startCapturing = startCapturing;
+p5.prototype.stopCapturing = stopCapturing;
+p5.prototype.isCapturing = isCapturing;

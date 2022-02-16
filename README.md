@@ -54,7 +54,39 @@ You can also use the fixed version.
 That's it.  
 A sequence of frames will be downloaded as a zip file.
 
-## Async mode
+### Control programmatically
+
+The following functions can be used to programmatically control the capture.
+
+| Functions          | Description                                                             |
+| ------------------ | ----------------------------------------------------------------------- |
+| `startCapturing()` | Start capturing                                                         |
+| `stopCapturing()`  | Stop capturing                                                          |
+| `isCapturing()`    | Returns a boolean indicating whether a capture is currently in progress |
+
+```js
+function setup() {
+  createCanvas(400, 400, WEBGL);
+}
+
+function draw() {
+  background(0);
+  normalMaterial();
+  rotateX(frameCount * 0.02);
+  rotateY(frameCount * 0.03);
+  torus(width * 0.2, width * 0.1, 64, 64);
+}
+
+function mouseClicked() {
+  if (isCapturing()) {
+    stopCapturing();
+  } else {
+    startCapturing();
+  }
+}
+```
+
+### Async mode
 
 By default, p5.save-frames runs the capture task in sync with the rendering frame rate of p5.js.
 In async mode, it will periodically run the capture task asynchronously with the rendering frame rate.
@@ -67,7 +99,6 @@ P5_SAVE_FRAMES_MODE = "async";
 
 function setup() {
   createCanvas(400, 400, WEBGL);
-  frameRate(60);
 }
 
 function draw() {
