@@ -122,6 +122,10 @@ You can change the behavior by specifying some global variables.
 | `P5_SAVE_FRAMES_EXTENSION`          | `"png"`         | Image format. "png" or "jpg"                                                                     |
 | `P5_SAVE_FRAMES_UI_PARENT`          | `document.body` | Parent element to overlay the GUI                                                                |
 
+## Limitations
+
+p5.save-frames currently only supports [p5.js global mode](https://github.com/processing/p5.js/wiki/Global-and-instance-mode).
+
 ## License
 
 MIT. Copyright (c) tapioca24
