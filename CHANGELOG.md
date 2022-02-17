@@ -1,3 +1,8 @@
+## 2.1.0 (February 16, 2022)
+
+- Add P5_SAVE_FRAMES_HIDE_UI option
+- Add functions to be controlled programmatically
+
 ## 2.0.0 (February 15, 2022)
 
 - [Breaking] Changed the sync mode to default
